@@ -1,0 +1,28 @@
+name: mle-model-production
+services:
+  ml_service:
+    build:
+      context: .
+      dockerfile: Dockerfile_ml_service
+    image: mle-model-production:local
+    ports: ["127.0.0.1:${ML_PORT:-8000}:8000"]
+    environment:
+      OMP_NUM_THREADS: '2'
+    mem_limit: 1g
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    ports: ["127.0.0.1:${PROMETHEUS_PORT:-9090}:9090"]
+    volumes:
+      - ./services/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command: ['--config.file=/etc/prometheus/prometheus.yml', '--storage.tsdb.retention.time=2d', '--storage.tsdb.retention.size=256MB']
+  grafana:
+    image: grafana/grafana:11.3.1
+    ports: ["127.0.0.1:${GRAFANA_PORT:-3000}:3000"]
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-student-local}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./services/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./dashboard.json:/var/lib/grafana/dashboards/dashboard.json:ro
+volumes:
+  grafana_data:

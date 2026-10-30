@@ -1,0 +1,5 @@
+apiVersion: 1
+providers:
+  - name: Real estate
+    options:
+      path: /var/lib/grafana/dashboards

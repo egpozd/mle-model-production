@@ -1,0 +1,13 @@
+{
+  "run_id": "52b6764852554b4eb42d49cc5106430a",
+  "version_evidence": "README предыдущего проекта; MLmodel подтверждает run_id, реестр не запрашивался",
+  "sha256": "0781bb26e8a5ed9bf71d3e2f5f5a39d6ba2ab35c726cdd375121abccea28b06a",
+  "registry_version_confirmed": false,
+  "final_run_confirmed": true,
+  "evidence": [
+    "MLmodel: run_id и сигнатура 14 признаков",
+    "stage5/final_audit.json: итоговый run; registry_versions содержит только 1–3",
+    "model_improvement.ipynb: итоговый Model URI runs:/52b6764852554b4eb42d49cc5106430a/model",
+    "README предыдущего проекта: итоговый Pipeline назван V4"
+  ]
+}

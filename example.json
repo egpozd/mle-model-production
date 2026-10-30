@@ -1,0 +1,17 @@
+{
+  "user_id": 123,
+  "floor": 17,
+  "kitchen_area": 10.199999809265137,
+  "living_area": 46.0,
+  "rooms": 3,
+  "is_apartment": false,
+  "total_area": 75.0999984741211,
+  "build_year": 1998,
+  "building_type_int": 4,
+  "latitude": 55.659122467041016,
+  "longitude": 37.7550163269043,
+  "ceiling_height": 2.640000104904175,
+  "flats_count": 624,
+  "floors_total": 18,
+  "has_elevator": true
+}
