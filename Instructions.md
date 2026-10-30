@@ -1,5 +1,5 @@
 # Инструкция
-Все команды PowerShell выполняются из `C:\Users\egpoz\mle-model-production`.
+Все команды PowerShell выполняются из корня клонированного репозитория.
 
 ## Этап 1. FastAPI
 Python 3.10 соответствует среде модели; локально проверен также Python 3.12. Если venv уже создан, используйте его. Перед запуском освободите порт 8000: остановите Compose (`docker compose --env-file services/.env down`) или предыдущий Uvicorn.
