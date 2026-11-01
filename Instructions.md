@@ -2,9 +2,9 @@
 Все команды PowerShell выполняются из корня клонированного репозитория.
 
 ## Этап 1. FastAPI
-Для локального запуска используйте Python 3.12: на этой машине установлен Python 3.12.10, с которым сервис прошёл проверку. Контейнер использует Python 3.10 (`python:3.10-slim`), как и среда сохранения модели. Команда `py -3.10` на этой машине недоступна.
+Для локального запуска используйте Python 3.12. Локально сервис проверялся с Python 3.12.10. В Docker используется Python 3.10 (`python:3.10-slim`), как и в среде сохранения модели. При локальной проверке команда `py -3.10` была недоступна.
 
-Если `.venv` уже создан и работает, используйте его без повторного создания и установки зависимостей. Проверить версию можно командой `.\.venv\Scripts\python.exe --version`. Для нового окружения сначала проверьте, что `python --version` показывает Python 3.12, затем выполните:
+Если виртуальное окружение `.venv` уже создано и работает, используйте его без повторной установки зависимостей. Проверить версию можно командой `.\.venv\Scripts\python.exe --version`. Для нового окружения сначала проверьте, что `python --version` показывает Python 3.12, затем выполните:
 
 ```powershell
 python -m venv .venv
@@ -16,7 +16,7 @@ python -m venv .venv
 ```powershell
 .\.venv\Scripts\python.exe -m uvicorn services.ml_service.app:app --host 127.0.0.1 --port 8000
 ```
-В другом терминале из той же директории:
+В другом терминале из той же папки:
 ```powershell
 Invoke-RestMethod http://localhost:8000/health
 Invoke-RestMethod http://localhost:8000/predict -Method Post -ContentType 'application/json' -Body (Get-Content example.json -Raw)
@@ -44,7 +44,7 @@ docker stop mle-production-audit-cli
 ```
 
 ## Этап 3. Docker Compose
-Остановите отдельный контейнер или Uvicorn, если они занимают порт 8000. После старта дождитесь загрузки модели и готовности Grafana; при отказе соединения повторите проверку через несколько секунд.
+Остановите отдельный контейнер или Uvicorn, если они занимают порт 8000. После запуска дождитесь загрузки модели и готовности Grafana. Если соединение не установилось, повторите проверку через несколько секунд.
 ```powershell
 docker compose --env-file services/.env up -d --build
 Invoke-RestMethod http://localhost:8000/health
@@ -52,11 +52,11 @@ Invoke-RestMethod http://localhost:9090/-/ready
 Invoke-RestMethod http://localhost:9090/api/v1/targets
 Invoke-RestMethod http://localhost:3000/api/health
 ```
-Порты задаются в services/.env. Prometheus: http://localhost:9090, Grafana: http://localhost:3000. Вход admin / student-local. Остановка только этого проекта: `docker compose --env-file services/.env down`. Volume Grafana сохраняется.
+Порты задаются в services/.env. Prometheus: http://localhost:9090, Grafana: http://localhost:3000. Вход admin / student-local. Для остановки сервисов проекта выполните: `docker compose --env-file services/.env down`. Данные Grafana сохраняются в томе Docker.
 
 ## Этап 4. Дашборд
-Сначала запустите Compose по этапу 3 и подготовьте venv по этапу 1. Отдельный Uvicorn для этого этапа не нужен.
+Сначала запустите Compose по этапу 3 и подготовьте виртуальное окружение по этапу 1. Отдельный Uvicorn для этого этапа не нужен.
 ```powershell
 .\.venv\Scripts\python.exe generate_load.py --count 300 --rate 2 --invalid-ratio 0.1
 ```
-Для непрерывной нагрузки используйте `--count 0`, завершение Ctrl+C. Откройте http://localhost:3000/d/real-estate. Дашборд и datasource создаются автоматически. Для ручного импорта выберите dashboard.json; datasource должен иметь UID prometheus. Подождите минуту для расчёта rate, сравните графики до и после нагрузки. Полный настоящий снимок четырёх панелей сохранён в dashboard.jpg.
+Для непрерывной нагрузки используйте `--count 0`. Чтобы остановить её, нажмите Ctrl+C. Откройте http://localhost:3000/d/real-estate. Дашборд и источник данных создаются автоматически. Для ручного импорта выберите dashboard.json. Источник данных должен иметь UID prometheus. Подождите минуту для расчёта rate и сравните графики до и после нагрузки. Снимок работающего дашборда со всеми четырьмя панелями сохранён в dashboard.jpg.
