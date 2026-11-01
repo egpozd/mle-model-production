@@ -2,10 +2,18 @@
 Все команды PowerShell выполняются из корня клонированного репозитория.
 
 ## Этап 1. FastAPI
-Python 3.10 соответствует среде модели; локально проверен также Python 3.12. Если venv уже создан, используйте его. Перед запуском освободите порт 8000: остановите Compose (`docker compose --env-file services/.env down`) или предыдущий Uvicorn.
+Для локального запуска используйте Python 3.12: на этой машине установлен Python 3.12.10, с которым сервис прошёл проверку. Контейнер использует Python 3.10 (`python:3.10-slim`), как и среда сохранения модели. Команда `py -3.10` на этой машине недоступна.
+
+Если `.venv` уже создан и работает, используйте его без повторного создания и установки зависимостей. Проверить версию можно командой `.\.venv\Scripts\python.exe --version`. Для нового окружения сначала проверьте, что `python --version` показывает Python 3.12, затем выполните:
+
 ```powershell
-py -3.10 -m venv .venv
+python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+Для запуска без Docker порт 8000 должен быть свободен: остановите Compose (`docker compose --env-file services/.env down`) или предыдущий Uvicorn. Затем запустите сервер:
+
+```powershell
 .\.venv\Scripts\python.exe -m uvicorn services.ml_service.app:app --host 127.0.0.1 --port 8000
 ```
 В другом терминале из той же директории:
@@ -14,6 +22,15 @@ Invoke-RestMethod http://localhost:8000/health
 Invoke-RestMethod http://localhost:8000/predict -Method Post -ContentType 'application/json' -Body (Get-Content example.json -Raw)
 .\.venv\Scripts\python.exe -m pytest -q
 ```
+
+Тот же POST-запрос через `curl.exe` в PowerShell (файл `example.json` находится в корне репозитория):
+
+```powershell
+curl.exe -X POST "http://127.0.0.1:8000/predict" -H "Content-Type: application/json" --data-binary "@example.json"
+```
+
+Если Compose уже запущен на порту 8000, запрос можно проверить на нём, не запуская отдельный Uvicorn.
+
 Swagger: http://localhost:8000/docs. Перед этапом 2 остановите Uvicorn сочетанием Ctrl+C.
 
 ## Этап 2. Docker
